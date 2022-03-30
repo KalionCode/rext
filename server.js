@@ -54,7 +54,7 @@ io.on('connection', socket => {
   // Listen for chatMessage
   socket.on('chatMessage', msg => {
     const user = getCurrentUser(socket.id);
-
+    if (!user) {socket.emit('message', formatMessage(botName, 'There was an error sending the message, please try again or reload'))}
     io.to(user.room).emit('message', formatMessage(user.username, msg));
   });
 
