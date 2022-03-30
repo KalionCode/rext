@@ -17,16 +17,42 @@ function EnterHandler() {
   chatbox.root.focus();
 }
 
-var chatbox = new Quill('#chatbox', {
+window.chatbox = new Quill('#chatbox', {
   theme: "bubble",
   bounds: document.querySelector("#chatbox"),
   placeholder: "Enter your message here",
 });
 
+window.currentSelection = null;
+
 chatbox.keyboard.addBinding(
   { key: 13, shiftKey:null },
   EnterHandler
 )
+
+import { EmojiButton } from '../vendor/emojibutton.js';
+
+const button = document.querySelector('#emoji-trigger');
+const picker = new EmojiButton({
+  position: {
+    right: 0,
+    bottom: '3rem'
+  }
+});
+
+button.addEventListener('click', ()=>{
+  chatbox.focus()
+  currentSelection = chatbox.getSelection()
+})
+
+picker.on('emoji', selection => { 
+  
+  chatbox.insertText(currentSelection.index,selection.emoji,'api');
+  chatbox.setSelection('a0',currentSelection.length)
+  // chatbox.focus()
+});
+
+button.addEventListener('click', () => { picker.togglePicker(); });
 
 const summitBtn = document.getElementById('summit-btn');
 const chatMessages = document.querySelector('.chat-messages');

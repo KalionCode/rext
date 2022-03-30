@@ -152,6 +152,10 @@ a {
 	float: right;
 }
 
+#emoji-trigger {
+	position: relative;
+}
+
 ::-webkit-scrollbar{
 	padding: 2px;
 	background-color: var(--light-color);
