@@ -130,10 +130,14 @@ a {
 	overflow-wrap: break-word;
 }
 
+.chat-messages .message img{
+	max-width: 60%;
+}
+
+
 .chat-messages .message .meta {
 	font-size: 15px;
 	font-weight: bold;
-	color: var(--dark-color-b);
 	opacity: 0.7;
 	margin-bottom: 7px;
 }
