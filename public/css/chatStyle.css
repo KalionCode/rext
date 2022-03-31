@@ -79,6 +79,7 @@ a {
 }
 
 .chat-sidebar h2 {
+	border-radius: 10px;
 	font-size: 20px;
 	background: rgba(0, 0, 0, 0.1);
 	padding: 10px;
@@ -89,8 +90,18 @@ a {
 	margin-bottom: 15px;
 }
 
+.chat-sidebar li {
+	font-weight: bolder;
+}
+
+.chat-sidebar ul {
+	border-radius: 10px;
+	background-color: var(--light-color);
+	overflow: hidden;
+}
+
 .chat-sidebar ul li {
-	padding: 10px 0;
+	padding: 10px 10px;
 }
 
 .chat-func {

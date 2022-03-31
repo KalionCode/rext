@@ -1,5 +1,6 @@
+
+//quilljs setup
 function EnterHandler() {
-  console.log('enter pressed');
   // Get message text
   let msg = chatbox.root.innerHTML;
 
@@ -30,6 +31,7 @@ chatbox.keyboard.addBinding(
   EnterHandler
 )
 
+//emoji picker
 import { EmojiButton } from '../vendor/emojibutton.js';
 
 const button = document.querySelector('#emoji-trigger');
@@ -54,6 +56,8 @@ picker.on('emoji', selection => {
 
 button.addEventListener('click', () => { picker.togglePicker(); });
 
+
+// socket io
 const summitBtn = document.getElementById('summit-btn');
 const chatMessages = document.querySelector('.chat-messages');
 const roomName = document.getElementById('room-name');
@@ -114,9 +118,10 @@ summitBtn.addEventListener('click', (e) => {
 function outputMessage(message) {
   const div = document.createElement('div');
   div.classList.add('message');
+  div.style.border = `5px solid ${message.user.colour}`
   const p = document.createElement('p');
   p.classList.add('meta');
-  p.innerText = message.username;
+  p.innerText = message.user.username;
   p.innerHTML += `<span> ${message.time}</span>`;
   div.appendChild(p);
   const para = document.createElement('p');
@@ -136,6 +141,7 @@ function outputUsers(users) {
   userList.innerHTML = '';
   users.forEach((user) => {
     const li = document.createElement('li');
+    li.style.backgroundColor = user.colour;
     li.innerText = user.username;
     userList.appendChild(li);
   });

@@ -11,6 +11,8 @@ const {
   getRoomUsernames
 } = require('./utils/users');
 
+
+
 const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
@@ -19,14 +21,17 @@ const io = socketio(server);
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-const botName = 'Rext Bot';
+const bot = {
+  username: 'Rext Bot',
+  colour: '#000000',
+  id: undefined
+}
 
 // Run when client connects
 io.on('connection', socket => {
   socket.on('joinRoom', ({ username, room }) => {
 
-    if (getRoomUsernames(room).includes(username)) 
-    {
+    if (getRoomUsernames(room).includes(username)) {
       socket.emit('duplicateName');
       return
     };
@@ -34,14 +39,14 @@ io.on('connection', socket => {
     socket.join(user.room);
 
     // Welcome current user
-    socket.emit('message', formatMessage(botName, `Welcome to Rext!`));
+    socket.emit('message', formatMessage(bot, `Welcome to Rext!`));
 
     // Broadcast when a user connects
     socket.broadcast
       .to(user.room)
       .emit(
         'message',
-        formatMessage(botName, `${user.username} has joined the chat`)
+        formatMessage(bot, `<span style=color:${user.colour}>${user.username}</span> has joined the chat`)
       );
 
     // Send users and room info
@@ -54,8 +59,8 @@ io.on('connection', socket => {
   // Listen for chatMessage
   socket.on('chatMessage', msg => {
     const user = getCurrentUser(socket.id);
-    if (!user) {socket.emit('message', formatMessage(botName, 'There was an error sending the message, please try again or reload'))}
-    io.to(user.room).emit('message', formatMessage(user.username, msg));
+    if (!user) { socket.emit('message', formatMessage(bot, 'There was an error sending the message, please try again or reload')) }
+    io.to(user.room).emit('message', formatMessage(user, msg));
   });
 
   // Runs when client disconnects
@@ -65,7 +70,7 @@ io.on('connection', socket => {
     if (user) {
       io.to(user.room).emit(
         'message',
-        formatMessage(botName, `${user.username} has left the chat`)
+        formatMessage(bot, `${user.username} has left the chat`)
       );
 
       // Send users and room info
