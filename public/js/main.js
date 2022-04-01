@@ -1,6 +1,8 @@
 
+window.lastMessage = {user:{username:null}};
+
 //quilljs setup
-function EnterHandler() {
+function enterHandler() {
   // Get message text
   let msg = chatbox.root.innerHTML;
 
@@ -12,7 +14,6 @@ function EnterHandler() {
 
   // Emit message to server
   socket.emit('chatMessage', msg);
-
   // Clear input
   chatbox.root.innerHTML = '';
   chatbox.root.focus();
@@ -27,8 +28,8 @@ window.chatbox = new Quill('#chatbox', {
 window.currentSelection = null;
 
 chatbox.keyboard.addBinding(
-  { key: 13, shiftKey:null },
-  EnterHandler
+  { key: 13, shiftKey: null },
+  enterHandler
 )
 
 //emoji picker
@@ -42,15 +43,15 @@ const picker = new EmojiButton({
   }
 });
 
-button.addEventListener('click', ()=>{
+button.addEventListener('click', () => {
   chatbox.focus()
   currentSelection = chatbox.getSelection()
 })
 
-picker.on('emoji', selection => { 
-  
-  chatbox.insertText(currentSelection.index,selection.emoji,'api');
-  chatbox.setSelection('a0',currentSelection.length)
+picker.on('emoji', selection => {
+
+  chatbox.insertText(currentSelection.index, selection.emoji, 'api');
+  chatbox.setSelection('a0', currentSelection.length)
   // chatbox.focus()
 });
 
@@ -86,9 +87,9 @@ socket.on('roomUsers', ({ room, users }) => {
 
 // Message from server
 socket.on('message', (message) => {
-  console.log(message);
+  console.log(message,lastMessage);
   outputMessage(message);
-
+  lastMessage = message;
   // Scroll down
   chatMessages.scrollTop = chatMessages.scrollHeight;
 });
@@ -97,38 +98,33 @@ socket.on('message', (message) => {
 summitBtn.addEventListener('click', (e) => {
   e.preventDefault();
 
-  // Get message text
-  let msg = chatbox.root.innerHTML;
-
-  msg = msg.trim();
-
-  if (msg == "<p><br></p>") {
-    return false;
-  }
-
-  // Emit message to server
-  socket.emit('chatMessage', msg);
-
-  // Clear input
-  chatbox.root.innerHTML = '';
-  chatbox.root.focus();
+  enterHandler()
 });
 
 // Output message to DOM
 function outputMessage(message) {
-  const div = document.createElement('div');
-  div.classList.add('message');
-  div.style.border = `5px solid ${message.user.colour}`
-  const p = document.createElement('p');
-  p.classList.add('meta');
-  p.innerText = message.user.username;
-  p.innerHTML += `<span> ${message.time}</span>`;
-  div.appendChild(p);
-  const para = document.createElement('p');
-  para.classList.add('text');
-  para.innerHTML = message.text;
-  div.appendChild(para);
-  document.querySelector('.chat-messages').appendChild(div);
+  console.log(lastMessage.user.username, message.user.username)
+  if (lastMessage.user.username === message.user.username) {
+    let existingMessages = document.querySelector('.chat-messages').children;
+    let lastDOMMessage = existingMessages[existingMessages.length-1];
+    
+    lastDOMMessage.innerHTML += `\n${message.text}`
+  }
+  else {
+    const div = document.createElement('div');
+    div.classList.add('message');
+    div.style.border = `3px solid ${message.user.colour}`
+    const p = document.createElement('p');
+    p.classList.add('meta');
+    p.innerText = message.user.username;
+    p.innerHTML += `<span> ${message.time}</span>`;
+    div.appendChild(p);
+    const para = document.createElement('p');
+    para.classList.add('text');
+    para.innerHTML = message.text;
+    div.appendChild(para);
+    document.querySelector('.chat-messages').appendChild(div);
+  }
 }
 
 // Add room name to DOM
